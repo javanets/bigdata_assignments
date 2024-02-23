@@ -1,0 +1,20 @@
+{
+    "map_nodes": [
+        "node_1",
+        "node_2"
+    ],
+    "tables": [
+        {
+            "name": "sample_table",
+            "rows": 200000
+        },
+        {
+            "name": "another_table",
+            "rows": 1000
+        },
+        {
+            "name": "yet_another_table",
+            "rows": 100000
+        }
+    ]
+}

@@ -1,0 +1,79 @@
+#!/usr/bin/python3
+import os
+import sys
+import shutil
+import subprocess
+from time import sleep
+from rich import print
+from rich.panel import Panel
+from rich.text import Text
+from live_progress import LiveProgress, display_error
+from testenv import TestEnv
+
+
+def display_module_and_problem(module_name, problem_name):
+    print(Panel.fit(
+        Text.assemble(
+            ("Модуль:  ", "orchid"), (module_name, "orchid bold"), ("   |   ", "orchid"),
+            ("Задача:  ", "orchid"), (problem_name, "orchid bold")
+        ),
+        border_style="orchid",
+        padding=(1, 3, 1, 3))
+    )    
+    print()
+
+
+
+STAGES = ["preprocess.py", "prepare_data.py", "run_solution.py", "check.py", "cleanup.py"]
+
+
+
+def main():
+    if len(sys.argv) < 2:
+        raise ValueError("Usage: check <solution file>")
+    
+    env = TestEnv(__file__, sys.argv[1])
+
+    display_module_and_problem(env.module_name, env.problem_name)
+    
+    os.chdir(env.tests_dir)
+
+    failed = False
+    error_text = None
+    with LiveProgress(len(env.tests), use_case="check") as progress:
+        for k in range(1, 1 + len(env.tests)):
+            test_dir = env.tests[k - 1].path
+
+            shutil.copyfile(env.solution_path, os.path.join(env.tests_dir, "solution.py"))
+
+            progress.start_test()
+
+            for i in range(len(STAGES)):
+                progress.start_job_idx(i)
+
+                if STAGES[i] != "run_solution.py":
+                    result = subprocess.run(["python3", STAGES[i], test_dir], capture_output=True, text=True)
+                else:
+                    with open("solution_output", "w") as outfile:
+                        result = subprocess.run(["python3", STAGES[i]], stdout=outfile, stderr=subprocess.PIPE, text=True)
+
+                if result.returncode != 0:
+                    progress.fail_job_idx(i)
+                    failed = True
+                    error_text = result.stderr
+                    break
+                else:
+                    progress.complete_job_idx(i)
+            
+            if failed:
+                break
+            
+            progress.complete_test()
+
+    if failed and error_text is not None:
+        display_error(error_text)
+
+
+
+if __name__ == "__main__":
+    main()

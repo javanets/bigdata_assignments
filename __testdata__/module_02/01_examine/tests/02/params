@@ -1,0 +1,26 @@
+{
+    "map_nodes": [
+        "some_node",
+        "yet_another_node",
+        "cool_node",
+        "cool-324-yet-another-node"
+    ],
+    "tables": [
+        {
+            "name": "aldjfaj_lafjdja_faldjf02344-afda",
+            "rows": 10000
+        },
+        {
+            "name": "aldjf-fa-dq4-daf-q-41-adfafa-er242-fas",
+            "rows": 20000
+        },
+        {
+            "name": "aldfja-zljcvladfa-dafljazvc-adlfja",
+            "rows": 5000
+        },
+        {
+            "name": "dlajf-afflajv-afljfaf-adf-aldjfaljdfalaf-ala",
+            "rows": 9000
+        }
+    ]
+}
